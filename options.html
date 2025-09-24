@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    body {
+      width: 350px;
+      padding: 15px;
+      font-family: Arial, sans-serif;
+    }
+
+    .setting-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    button:hover {
+      background-color: #3367d6;
+    }
+
+    #status {
+      margin-top: 10px;
+      color: #137333;
+      font-size: 0.9em;
+    }
+
+    .example {
+      margin-top: 5px;
+      font-size: 0.8em;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="setting-group">
+    <label for="browserPrefix">Prefix: </label>
+    <input type="text" id="browserPrefix" placeholder="Please input tx explorer prefix">
+    <div class="example">e.g.: https://bscscan.com/tx/ Or https://app.blocksec.com/explorer/tx/bsc/</div>
+  </div>
+  <button id="save">Save</button>
+  <div id="status"></div>
+
+  <script src="options.js"></script>
+</body>
+
+</html>
