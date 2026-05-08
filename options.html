@@ -4,31 +4,72 @@
 <head>
   <style>
     body {
-      width: 350px;
+      width: 400px;
       padding: 15px;
       font-family: Arial, sans-serif;
     }
 
-    .setting-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
+    h3 {
+      margin: 0 0 10px 0;
       color: #333;
+      font-size: 14px;
     }
 
-    input {
-      width: 100%;
-      padding: 8px;
+    .chain-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .chain-item input {
+      padding: 6px 8px;
       border: 1px solid #ddd;
       border-radius: 4px;
       box-sizing: border-box;
     }
 
-    button {
+    .chain-item .chain-name {
+      width: 90px;
+      font-size: 13px;
+    }
+
+    .chain-item .chain-prefix {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    .chain-item .btn-remove {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .chain-item .btn-remove:hover {
+      background-color: #c0392b;
+    }
+
+    .btn-add {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .btn-add:hover {
+      background-color: #219a52;
+    }
+
+    .btn-save {
       background-color: #4285f4;
       color: white;
       border: none;
@@ -38,7 +79,7 @@
       font-weight: 500;
     }
 
-    button:hover {
+    .btn-save:hover {
       background-color: #3367d6;
     }
 
@@ -48,22 +89,22 @@
       font-size: 0.9em;
     }
 
-    .example {
-      margin-top: 5px;
-      font-size: 0.8em;
-      color: #666;
+    .hint {
+      margin-top: 4px;
+      font-size: 0.75em;
+      color: #999;
     }
   </style>
 </head>
 
 <body>
-  <div class="setting-group">
-    <label for="browserPrefix">Prefix: </label>
-    <input type="text" id="browserPrefix" placeholder="Please input tx explorer prefix">
-    <div class="example">e.g.: https://bscscan.com/tx/ Or https://app.blocksec.com/explorer/tx/bsc/</div>
-  </div>
-  <button id="save">Save</button>
+  <h3>Chain Explorer Prefixes</h3>
+  <div id="chainList"></div>
+  <button class="btn-add" id="addChain">+ Add Chain</button>
+  <br>
+  <button class="btn-save" id="save">Save</button>
   <div id="status"></div>
+  <div class="hint">Only configured chains will be replaced; others keep original OKX links.</div>
 
   <script src="options.js"></script>
 </body>
