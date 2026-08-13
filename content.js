@@ -60,9 +60,8 @@ function modifyLinks() {
 // 定位目标容器的新方法：找包含“/portfolio/”链接且按钮文本为“前往资产看板”的父级div
 function findTargetPortfolioContainers() {
   // 1. 先找到所有“前往资产看板”按钮（文本内容更稳定）
-  const targetButtons = Array.from(document.querySelectorAll('button span.btn-content'))
-    .filter(span => span.textContent.trim() === '前往资产看板') // 匹配按钮文本
-    .map(span => span.closest('button')); // 找到按钮元素
+  const targetButtons = Array.from(document.querySelectorAll('button.dex-subtlebutton'))
+    .filter(button => button.innerText.trim() === '前往资产看板'); // 匹配按钮文本
 
   if (targetButtons.length === 0) return [];
 
@@ -110,7 +109,7 @@ function addDeBankButtonIfNeeded() {
 
     const btnIcon = document.createElement('i');
     // 复用原始按钮的图标类（保持视觉风格统一）
-    btnIcon.className = originalLink.querySelector('i.btn-icon').className;
+    btnIcon.className = originalLink.querySelector('i.dex-subtlebutton-icon').className;
     btnIcon.role = 'img';
     btnIcon.ariaHidden = 'true';
 
@@ -123,6 +122,7 @@ function addDeBankButtonIfNeeded() {
     debankLink.appendChild(debankButton);
 
     // 将DeBank按钮添加到目标容器（放在原始按钮旁边）
+    container.appendChild(document.createElement('br'));
     container.appendChild(debankLink);
   });
 }
