@@ -61,7 +61,7 @@ function modifyLinks() {
 function findTargetPortfolioContainers() {
   // 1. 先找到所有“前往资产看板”按钮（文本内容更稳定）
   const targetButtons = Array.from(document.querySelectorAll('button.dex-subtlebutton'))
-    .filter(button => button.innerText.trim() === '前往资产看板'); // 匹配按钮文本
+    .filter(button => button.innerText.trim() === '前往资产看板' || button.innerText.trim() === 'Go to Portfolio'); // 匹配按钮文本
 
   if (targetButtons.length === 0) return [];
 
