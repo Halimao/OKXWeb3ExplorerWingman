@@ -1,9 +1,8 @@
 // 从链接中提取链名和交易哈希
-function extractChainAndTxHash(href) {
-  // 匹配格式：/explorer/{chain}/tx/{txHash}
-  const match = href.match(/\/explorer\/([a-zA-Z0-9]+)\/tx\/(0x[0-9a-fA-F]{64})/);
+function extractTxHash(href) {
+  const match = href.match(/\/tx\/(0x[0-9a-fA-F]{64})/);
   if (match) {
-    return { chain: match[1], txHash: match[2] };
+    return { txHash: match[1] };
   }
   return null;
 }
@@ -35,6 +34,9 @@ function hasDeBankButton(container) {
 function modifyLinks() {
   // 获取所有符合条件的a标签
   const links = document.querySelectorAll('a.dex-powerLink-a11y.dex-powerLink');
+  const path = window.location.pathname;
+  const pathSegments = path.split('/').filter(Boolean);
+  const chain = pathSegments[2];
 
   // 从存储中获取用户自定义的各链交易浏览器前缀
   chrome.storage.sync.get(['chainPrefixes'], function (result) {
@@ -45,9 +47,9 @@ function modifyLinks() {
       link.target = '_blank';
 
       // 提取链名和交易哈希
-      const extracted = extractChainAndTxHash(link.href);
+      const extracted = extractTxHash(link.href);
       if (extracted) {
-        const { chain, txHash } = extracted;
+        const { txHash } = extracted;
         // 只有配置了该链的前缀才进行替换，否则保持原始链接
         if (chainPrefixes[chain]) {
           link.href = chainPrefixes[chain] + txHash;
