@@ -25,9 +25,9 @@ function extractWalletAddress(linkHref) {
 }
 
 // 检查目标容器是否已添加过DeBank按钮（避免重复添加）
-function hasDeBankButton(container) {
+function hasCustomProfileButton(container) {
   // 通过自定义类名标记，检查容器内是否已有DeBank按钮
-  return container.querySelector('.debank-custom-link') !== null;
+  return container.querySelector('.custom-profile-link') !== null;
 }
 
 // 修改链接属性
@@ -74,13 +74,13 @@ function findTargetPortfolioContainers() {
     .map(link => link.closest('div')); // 找到链接的父级div（即目标容器）
 }
 
-function addDeBankButtonIfNeeded() {
+function addDeBankAndZerionButtonIfNeeded() {
   // 查找所有目标容器（.HWG3wN__dex）
   const targetContainers = findTargetPortfolioContainers();
 
   targetContainers.forEach(container => {
     // 跳过已添加过DeBank按钮的容器
-    if (hasDeBankButton(container)) return;
+    if (hasCustomProfileButton(container)) return;
 
     const originalLink = container.querySelector('a.dex-powerLink-a11y[href*="/portfolio/"]');
     if (!originalLink) return;
@@ -90,42 +90,84 @@ function addDeBankButtonIfNeeded() {
     console.log(walletAddress);
     if (!walletAddress) return;
 
-    // 创建DeBank链接（复用原始链接样式，确保视觉统一）
-    const debankLink = document.createElement('a');
-    // DeBank个人历史页链接格式：https://debank.com/profile/[地址]/history
-    debankLink.href = `https://debank.com/profile/${walletAddress}/history`;
-    debankLink.rel = 'noopener';
-    debankLink.target = '_blank';
-    // 继承原始链接的样式类 + 自定义标记类（用于判断是否已添加）
-    debankLink.className = `${originalLink.className} debank-custom-link`;
+    {
+      // 创建DeBank链接（复用原始链接样式，确保视觉统一）
+      const debankLink = document.createElement('a');
+      // DeBank个人历史页链接格式：https://debank.com/profile/[地址]/history
+      debankLink.href = `https://debank.com/profile/${walletAddress}/history`;
+      debankLink.rel = 'noopener';
+      debankLink.target = '_blank';
+      // 继承原始链接的样式类 + 自定义标记类（用于判断是否已添加）
+      debankLink.className = `${originalLink.className} debank-custom-link custom-profile-link`;
 
-    // 创建DeBank按钮（完全复用原始按钮结构，仅修改文字）
-    const debankButton = document.createElement('button');
-    debankButton.type = 'button';
-    // 继承原始按钮的样式类（确保和OKX原生按钮外观一致）
-    debankButton.className = originalLink.querySelector('button').className;
+      // 创建DeBank按钮（完全复用原始按钮结构，仅修改文字）
+      const debankButton = document.createElement('button');
+      debankButton.type = 'button';
+      // 继承原始按钮的样式类（确保和OKX原生按钮外观一致）
+      debankButton.className = originalLink.querySelector('button').className;
 
-    // 组装按钮内容（复用原始图标，修改文字为“前往DeBank资产”）
-    const btnContent = document.createElement('span');
-    btnContent.className = 'btn-content';
+      // 组装按钮内容（复用原始图标，修改文字为“前往DeBank资产”）
+      const btnContent = document.createElement('span');
+      btnContent.className = 'btn-content';
 
-    const btnIcon = document.createElement('i');
-    // 复用原始按钮的图标类（保持视觉风格统一）
-    btnIcon.className = originalLink.querySelector('i.dex-subtlebutton-icon').className;
-    btnIcon.role = 'img';
-    btnIcon.ariaHidden = 'true';
+      const btnIcon = document.createElement('i');
+      // 复用原始按钮的图标类（保持视觉风格统一）
+      btnIcon.className = originalLink.querySelector('i.dex-subtlebutton-icon').className;
+      btnIcon.role = 'img';
+      btnIcon.ariaHidden = 'true';
 
-    const btnText = document.createTextNode('前往DeBank');
+      const btnText = document.createTextNode('前往DeBank');
 
-    // 拼接按钮结构
-    btnContent.appendChild(btnIcon);
-    btnContent.appendChild(btnText);
-    debankButton.appendChild(btnContent);
-    debankLink.appendChild(debankButton);
+      // 拼接按钮结构
+      btnContent.appendChild(btnIcon);
+      btnContent.appendChild(btnText);
+      debankButton.appendChild(btnContent);
+      debankLink.appendChild(debankButton);
 
-    // 将DeBank按钮添加到目标容器（放在原始按钮旁边）
-    container.appendChild(document.createElement('br'));
-    container.appendChild(debankLink);
+      // 将DeBank按钮添加到目标容器（放在原始按钮旁边）
+      container.appendChild(document.createElement('br'));
+      container.appendChild(debankLink);
+    }
+
+    {
+      // 创建Zerion链接（复用原始链接样式，确保视觉统一）
+      const zerionLink = document.createElement('a');
+      // DeBank个人历史页链接格式：https://debank.com/profile/[地址]/history
+      zerionLink.href = `https://app.zerion.io/${walletAddress}/history`;
+      zerionLink.rel = 'noopener';
+      zerionLink.target = '_blank';
+      // 继承原始链接的样式类 + 自定义标记类（用于判断是否已添加）
+      zerionLink.className = `${originalLink.className} zerion-custom-link custom-profile-link`;
+
+      // 创建DeBank按钮（完全复用原始按钮结构，仅修改文字）
+      const zerionButton = document.createElement('button');
+      zerionButton.type = 'button';
+      // 继承原始按钮的样式类（确保和OKX原生按钮外观一致）
+      zerionButton.className = originalLink.querySelector('button').className;
+
+      // 组装按钮内容（复用原始图标，修改文字为“前往DeBank资产”）
+      const btnContent = document.createElement('span');
+      btnContent.className = 'btn-content';
+
+      const btnIcon = document.createElement('i');
+      // 复用原始按钮的图标类（保持视觉风格统一）
+      btnIcon.className = originalLink.querySelector('i.dex-subtlebutton-icon').className;
+      btnIcon.role = 'img';
+      btnIcon.ariaHidden = 'true';
+
+      const btnText = document.createTextNode('前往Zerion');
+
+      // 拼接按钮结构
+      btnContent.appendChild(btnIcon);
+      btnContent.appendChild(btnText);
+      zerionButton.appendChild(btnContent);
+      zerionLink.appendChild(zerionButton);
+
+      // 将Zerion按钮添加到目标容器（放在原始按钮旁边）
+      container.appendChild(document.createElement('br'));
+      container.appendChild(zerionLink);
+    }
+
   });
 }
 
@@ -133,12 +175,12 @@ function addDeBankButtonIfNeeded() {
 // ========================= 定时任务：1秒执行一次 =========================
 function initTimerTask() {
   // 初始加载时先执行一次（处理页面已存在的容器）
-  addDeBankButtonIfNeeded();
+  addDeBankAndZerionButtonIfNeeded();
 
   // 定时轮询：每1秒执行一次（平衡“实时性”和“性能消耗”）
   const pollInterval = 300; // 1000ms = 1秒
   setInterval(() => {
-    addDeBankButtonIfNeeded();
+    addDeBankAndZerionButtonIfNeeded();
   }, pollInterval);
 
   // （可选）页面关闭时清除定时器，避免内存泄漏
