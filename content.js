@@ -62,7 +62,7 @@ function modifyLinks() {
 // 定位目标容器的新方法：找包含“/portfolio/”链接且按钮文本为“前往资产看板”的父级div
 function findTargetPortfolioContainers() {
   // 1. 先找到所有“前往资产看板”按钮（文本内容更稳定）
-  const targetButtons = Array.from(document.querySelectorAll('button.dex-subtlebutton'))
+  const targetButtons = Array.from(document.querySelectorAll('.dex-subtlebutton'))
     .filter(button => button.innerText.trim() === '前往资产看板' || button.innerText.trim() === 'Go to Portfolio'); // 匹配按钮文本
 
   if (targetButtons.length === 0) return [];
@@ -100,16 +100,6 @@ function addDeBankAndZerionButtonIfNeeded() {
       // 继承原始链接的样式类 + 自定义标记类（用于判断是否已添加）
       debankLink.className = `${originalLink.className} debank-custom-link custom-profile-link`;
 
-      // 创建DeBank按钮（完全复用原始按钮结构，仅修改文字）
-      const debankButton = document.createElement('button');
-      debankButton.type = 'button';
-      // 继承原始按钮的样式类（确保和OKX原生按钮外观一致）
-      debankButton.className = originalLink.querySelector('button').className;
-
-      // 组装按钮内容（复用原始图标，修改文字为“前往DeBank资产”）
-      const btnContent = document.createElement('span');
-      btnContent.className = 'btn-content';
-
       const btnIcon = document.createElement('i');
       // 复用原始按钮的图标类（保持视觉风格统一）
       btnIcon.className = originalLink.querySelector('i.dex-subtlebutton-icon').className;
@@ -119,10 +109,8 @@ function addDeBankAndZerionButtonIfNeeded() {
       const btnText = document.createTextNode('前往DeBank');
 
       // 拼接按钮结构
-      btnContent.appendChild(btnIcon);
-      btnContent.appendChild(btnText);
-      debankButton.appendChild(btnContent);
-      debankLink.appendChild(debankButton);
+      debankLink.appendChild(btnIcon);
+      debankLink.appendChild(btnText);
 
       // 将DeBank按钮添加到目标容器（放在原始按钮旁边）
       container.appendChild(document.createElement('br'));
@@ -139,16 +127,6 @@ function addDeBankAndZerionButtonIfNeeded() {
       // 继承原始链接的样式类 + 自定义标记类（用于判断是否已添加）
       zerionLink.className = `${originalLink.className} zerion-custom-link custom-profile-link`;
 
-      // 创建DeBank按钮（完全复用原始按钮结构，仅修改文字）
-      const zerionButton = document.createElement('button');
-      zerionButton.type = 'button';
-      // 继承原始按钮的样式类（确保和OKX原生按钮外观一致）
-      zerionButton.className = originalLink.querySelector('button').className;
-
-      // 组装按钮内容（复用原始图标，修改文字为“前往DeBank资产”）
-      const btnContent = document.createElement('span');
-      btnContent.className = 'btn-content';
-
       const btnIcon = document.createElement('i');
       // 复用原始按钮的图标类（保持视觉风格统一）
       btnIcon.className = originalLink.querySelector('i.dex-subtlebutton-icon').className;
@@ -158,10 +136,8 @@ function addDeBankAndZerionButtonIfNeeded() {
       const btnText = document.createTextNode('前往Zerion');
 
       // 拼接按钮结构
-      btnContent.appendChild(btnIcon);
-      btnContent.appendChild(btnText);
-      zerionButton.appendChild(btnContent);
-      zerionLink.appendChild(zerionButton);
+      zerionLink.appendChild(btnIcon);
+      zerionLink.appendChild(btnText);
 
       // 将Zerion按钮添加到目标容器（放在原始按钮旁边）
       container.appendChild(document.createElement('br'));
