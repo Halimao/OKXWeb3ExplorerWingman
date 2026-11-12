@@ -148,7 +148,92 @@ function addDeBankAndZerionButtonIfNeeded() {
 }
 
 
-// ========================= 定时任务：1秒执行一次 =========================
+// 为交易地址悬浮窗追加交易记录入口, 并在浮窗复用时同步当前地址.
+function addHoverProfileButtonsIfNeeded() {
+  const portfolioLinks = document.querySelectorAll('.dex-popover a.dex-powerLink-a11y');
+  const providers = [
+    {
+      name: 'DeBank',
+      key: 'debank',
+      prefix: 'https://debank.com/profile/',
+      color: '#FE754D',
+      // 橙色圆角方块内镂空的 D, 在 14px 下仍能辨认.
+      path: 'M7 6h5a6 6 0 0 1 0 12H7V6Zm3 3v6h2a3 3 0 0 0 0-6h-2Z'
+    },
+    {
+      name: 'Zerion',
+      key: 'zerion',
+      prefix: 'https://app.zerion.io/',
+      color: '#2962FF',
+      // 蓝色圆角方块配白色折线 Z, 与 DeBank 的轮廓和尺寸统一.
+      path: 'M6.5 6.5h11v2.6L10.3 15h7.2v2.5h-11v-2.6l7.2-5.9H6.5V6.5Z'
+    }
+  ];
+
+  portfolioLinks.forEach(originalLink => {
+    if (!originalLink.querySelector('.dex-okx-defi-nft-trading')) return;
+    // 通过资产页链接和筛选图标识别底部操作行, 不依赖 OKX 会变化的哈希类名.
+    const toolbar = originalLink.closest('[data-testid="okd-popup"]')?.parentElement;
+    if (!toolbar || !toolbar.querySelector('.dex-okx-defi-filter')) return;
+
+    const walletAddress = originalLink.getAttribute('href')?.match(/\/portfolio\/(0x[0-9a-fA-F]{40})(?:\/|[?#]|$)/)?.[1];
+    if (!walletAddress) {
+      // 地址不再有效时移除旧入口, 避免复用浮窗后仍跳转到上一地址.
+      toolbar.querySelectorAll('.wingman-hover-profile-link').forEach(link => link.remove());
+      return;
+    }
+
+    providers.forEach(provider => {
+      let link = toolbar.querySelector(`[data-wingman-profile="${provider.key}"]`);
+      if (!link) {
+        link = document.createElement('a');
+        link.className = `${originalLink.className} wingman-hover-profile-link`;
+        link.dataset.wingmanProfile = provider.key;
+        link.target = '_blank';
+        link.rel = 'nofollow noopener noreferrer';
+        link.title = `前往 ${provider.name} 交易记录`;
+        link.setAttribute('aria-label', link.title);
+        Object.assign(link.style, {
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          verticalAlign: 'middle',
+          flexShrink: '0'
+        });
+
+        // 使用 SVG DOM 创建静态图形, 不加载外部图片或注入 HTML.
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('width', '14');
+        svg.setAttribute('height', '14');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.setAttribute('focusable', 'false');
+
+        const background = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        background.setAttribute('x', '1');
+        background.setAttribute('y', '1');
+        background.setAttribute('width', '22');
+        background.setAttribute('height', '22');
+        background.setAttribute('rx', '6');
+        background.setAttribute('fill', provider.color);
+
+        const symbol = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        symbol.setAttribute('d', provider.path);
+        symbol.setAttribute('fill', '#FFFFFF');
+        symbol.setAttribute('fill-rule', 'evenodd');
+        svg.append(background, symbol);
+        link.appendChild(svg);
+        toolbar.appendChild(link);
+      }
+
+      const href = `${provider.prefix}${walletAddress}/history`;
+      // 只写入变化的链接, 防止 href 监听被自身更新持续触发.
+      if (link.getAttribute('href') !== href) link.href = href;
+    });
+  });
+}
+
+// ========================= 定时任务: 1秒执行一次 =========================
 function initTimerTask() {
   // 初始加载时先执行一次（处理页面已存在的容器）
   addDeBankAndZerionButtonIfNeeded();
@@ -173,15 +258,25 @@ window.addEventListener('load', modifyLinks);
 
 // 监听页面动态内容变化，处理动态加载的链接
 const observer = new MutationObserver((mutations) => {
-  mutations.forEach((mutation) => {
-    if (mutation.addedNodes.length) {
-      modifyLinks();
-    }
-  });
+  const hasAddedNodes = mutations.some(mutation => mutation.addedNodes.length > 0);
+  if (hasAddedNodes) modifyLinks();
+
+  // 新浮窗插入或原资产页链接换地址时同步入口, 不对自建链接的 href 触发全页改写.
+  const hasPortfolioChange = mutations.some(mutation =>
+    mutation.type === 'attributes' &&
+    mutation.target.matches('.dex-popover a.dex-powerLink-a11y') &&
+    mutation.target.querySelector('.dex-okx-defi-nft-trading')
+  );
+  if (hasAddedNodes || hasPortfolioChange) addHoverProfileButtonsIfNeeded();
 });
 
 // 监视整个页面的变化
 observer.observe(document.body, {
   childList: true,
-  subtree: true
+  subtree: true,
+  attributes: true,
+  attributeFilter: ['href']
 });
+
+// content script 执行时页面可能已加载, 立即处理已经存在的悬浮窗.
+addHoverProfileButtonsIfNeeded();
